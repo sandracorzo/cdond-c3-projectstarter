@@ -34,7 +34,7 @@ jobs:
              npm audit fix --audit-level=critical --force
              npm audit fix --force
              npm audit --audit-level=critical
-             exit 1
+             npm run build
       - save_cache:
           paths: [backend/node_modules]
           key: backend-build
