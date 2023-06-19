@@ -47,8 +47,8 @@ jobs:
       # Restore from cache
       # Your job code here
       - checkout
-      - restore-cache:
-          keys: frontend-build
+      - restore_cache:
+          keys: [frontend-build]
       - run: 
           name: Run frontend test
           command: |
@@ -65,8 +65,8 @@ jobs:
       # Restore from cache
       # Your job code here
       - checkout
-      - restore-cache:
-          keys: backend-build
+      - restore_cache:
+          keys: [backend-build]
       - run: 
           name: Run backend test
           command: |
