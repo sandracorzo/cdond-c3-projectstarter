@@ -71,12 +71,8 @@ jobs:
           name: Run backend test
           command: |
             cd backend
-            npm install
-            npm audit fix --audit-level=critical --force
-            npm audit fix --force
-            npm audit --audit-level=critical
-            npm run test
-
+            npm install --save-dev jest-junit
+            npm test -- --ci --runInBand --reporters=default --reporters=jest-junit && pwd
 workflows:
   default:
     jobs:
