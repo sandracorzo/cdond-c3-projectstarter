@@ -117,8 +117,7 @@ workflows:
   default:
     jobs:
       - build-frontend:
-          context:
-            - slack
+          context: slack
       - build-backend
       - test-frontend:
           requires: [build-frontend]
