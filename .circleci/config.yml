@@ -23,9 +23,9 @@ jobs:
           template: basic_fail_1
       - slack/notify:
           branch_pattern: .+
-          event: pass
+          event: fail
           channel: C05DYFPKMM1
-          template: basic_success_1
+          template: basic_fail_1
 
   build-backend:
     docker:
