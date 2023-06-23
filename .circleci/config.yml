@@ -14,13 +14,13 @@ jobs:
           name: Build front-end
           command: |
             cd frontend
-            npm installz
+            npm install
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
       - slack/status:
           fail_only: false
-          webhook: https://hooks.slack.com/services/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
+          webhook: https://hooks.slack.com/services/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
 
   build-backend:
     docker:
