@@ -1,11 +1,11 @@
 version: 2.1
 orbs:
-  slack: circleci/slack@4.2.0
+  slack: circleci/slack@3.4.2
        
 jobs:
   build-frontend:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:13.8
     steps:
       - checkout
       - restore_cache:
@@ -18,14 +18,9 @@ jobs:
       - save_cache:
           paths: [frontend/node_modules]
           key: frontend-build
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          branch_pattern: .+
-          event: fail
-          channel: C05DYFPKMM1
-          template: basic_fail_1
+      - slack/status:
+          fail_only: false
+          webhook: https://hooks.slack.com/services/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
 
   build-backend:
     docker:
