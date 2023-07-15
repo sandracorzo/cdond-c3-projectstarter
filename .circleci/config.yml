@@ -189,10 +189,11 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      # Add ssh keys with fingerprint from circleci ssh keys
+
       # attach workspace
       - attach_workspace:
           at: .
+      # Add ssh keys with fingerprint from circleci ssh keys
       - add_ssh_keys:
           fingerprints: 
             - "47:04:5b:d5:f3:4e:ce:95:d4:58:70:75:98:40:ed:c7"
