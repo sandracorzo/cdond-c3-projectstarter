@@ -221,7 +221,7 @@ jobs:
       - attach_workspace:
           at: .
       - run:
-          name: Run database migration
+          name: Run database migration now
           command: |
             cd backend
             pwd
