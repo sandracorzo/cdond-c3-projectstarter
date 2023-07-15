@@ -145,6 +145,9 @@ jobs:
       # Checkout code from git
       - checkout
       - run:
+          name: Install tar and zip utilities
+          command: yum -y install tar gzip
+      - run:
           name: Ensure back-end infrastructure exists
           command: |
             aws cloudformation deploy \
@@ -196,7 +199,38 @@ jobs:
           command: |
             cd .circleci/ansible
             ansible-playbook -i inventory.txt configure-server.yml
-      # Here's where you will add some code to rollback on failure 
+      # Here's where you will add some code to rollback on failure  
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}    
+
+  run-migrations:
+    docker:
+      # Docker image that supports NodeJS
+      - image: circleci/node:13.8.0
+    steps:
+      - checkout
+      - restore_cache:
+          keys: [backend-build-cache]
+      - attach_workspace:
+          at: .
+      - run:
+          name: Run database migration
+          command: |
+            cd ./backend
+            pwd
+            npm run migrations > migrations_log.txt
+            cat ./migrations_log.txt
+      - run:
+          name: Send database migration status
+          command: |
+            if grep "has been executed successfully" ./backend/migrations_log.txt;
+            then
+              echo "Database migration has been executed successfully"
+            else
+              echo "Database migration has failed, verify DB setup!"
+            fi
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7} 
 
 workflows:
   default:
@@ -214,3 +248,7 @@ workflows:
           requires: [build-backend]
       - deploy-infrastructure:
           requires: [test-frontend, test-backend, scan-frontend, scan-backend]
+      - configure-infrastructure:
+          requires: [deploy-infrastructure]
+      - run-migrations:
+          requires: [configure-infrastructure]
