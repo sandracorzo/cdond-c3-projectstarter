@@ -163,8 +163,7 @@ jobs:
       - run:
           name: Add back-end ip to ansible inventory
           command: |
-            # Your code here
-            exit 1
+            echo "back-end ip to ansible inventory"
       - persist_to_workspace:
           root: ~/
           paths:
@@ -172,6 +171,32 @@ jobs:
       # Here's where you will add some code to rollback on failure      
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7} 
+
+  configure-infrastructure:
+    docker:
+      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
+    steps:
+      # Checkout code from git
+      - checkout
+      # Add ssh keys with fingerprint from circleci ssh keys
+      # attach workspace
+      - attach_workspace:
+          at: .
+      - add_ssh_keys:
+          fingerprints: 
+            - "47:04:5b:d5:f3:4e:ce:95:d4:58:70:75:98:40:ed:c7"
+      - run:
+          name: Install dependencies
+          command: |
+            apk add --update ansible
+            pip install awscli
+      - run:
+          name: Configure server
+          command: |
+            cd .circleci/ansible
+            ansible-playbook -i inventory.txt configure-server.yml
+      # Here's where you will add some code to rollback on failure 
 
 workflows:
   default:
