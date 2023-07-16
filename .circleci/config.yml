@@ -25,7 +25,21 @@ commands:
           when: on_fail
           command: |
             aws cloudformation delete-stack --stack-name udapeople-frontend-<< parameters.workflowID >>
-       
+
+  revert-migrations:
+    description: Revert the last migration if successfully run in the current workflow.
+    parameters:
+      workflowID:
+        type: string      
+    steps:
+      - run:
+          name: Revert migrations
+          when: on_fail
+          command: |
+            cd backend
+            npm install
+            npm run migrations:revert
+                   
 jobs:
   build-frontend:
     docker:
@@ -242,6 +256,54 @@ jobs:
       - destroy-environment:
           workflowID: ${CIRCLE_WORKFLOW_ID:0:7} 
 
+  deploy-frontend:
+    docker:
+      # Docker image that supports AWS CLI
+      - image: amazon/aws-cli
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: |
+            yum install -y tar gzip curl
+            curl -sL https://rpm.nodesource.com/setup_10.x | bash -
+            yum install -y nodejs
+      - attach_workspace:
+          at: .
+      - run:
+          name: Get backend url and setup environment variables
+          command: |
+            echo "back-end ip to frontend .env file"
+            BACKEND_IP=$(aws ec2 describe-instances \
+              --query 'Reservations[*].Instances[*].PublicIpAddress' \
+              --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --output text)
+            echo "BACKEND_IP=${BACKEND_IP}"
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "${API_URL}"
+            echo ENVIRONMENT=production > "frontend/.env"
+            echo API_URL=${API_URL} >> "frontend/.env"
+            cat frontend/.env
+      - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            pwd
+            npm i
+            npm run build
+      - run:
+          name: Deploy frontend objects
+          command: |
+            aws s3 cp frontend/dist "s3://udapeople-${CIRCLE_WORKFLOW_ID:0:7}" --recursive
+      - persist_to_workspace:
+          root: .
+          paths:
+            - ./frontend/dist
+      - destroy-environment:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}
+      - revert-migrations:
+          workflowID: ${CIRCLE_WORKFLOW_ID:0:7}   
+
 workflows:
   default:
     jobs:
@@ -262,3 +324,5 @@ workflows:
           requires: [deploy-infrastructure]
       - run-migrations:
           requires: [configure-infrastructure]
+      - deploy-backend:
+          requires: [run-migrations]
