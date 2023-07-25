@@ -1,0 +1,21 @@
+﻿URLS:
+[URL01] https://github.com/sandracorzo/cdond-c3-projectstarter
+[URL02] http://udapeople-f264499.s3-website-us-east-1.amazonaws.com/#/employees
+[URL03_SCREENSHOT] ok https://d33m2uay1exxdf.cloudfront.net/#/employees
+[URL04_SCREENSHOT] ok http://ec2-3-83-67-149.compute-1.amazonaws.com:3030/api/status
+[URL05_SCREENSHOT] ok
+
+
+Screenshots attached:
+[SCREENSHOT01] ok
+[SCREENSHOT02] ok
+[SCREENSHOT03] ok
+[SCREENSHOT04] ok
+[SCREENSHOT05] ok
+[SCREENSHOT06] ok
+[SCREENSHOT07] ok
+[SCREENSHOT08] ok 
+[SCREENSHOT09] ok 
+[SCREENSHOT10] ok 
+[SCREENSHOT11] x3 screenshots ok ok ok
+[SCREENSHOT12]  ok
